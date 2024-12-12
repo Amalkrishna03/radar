@@ -1,12 +1,28 @@
-import customtkinter
+import threading
 
-def button_callback():
-    print("button clicked")
+from gui.ttk import GUI, SetupButtons, SetupLayout
+from model.yolo import ObjectDetectionModel
+from model.capture import VideoCapture
 
-app = customtkinter.CTk()
-app.geometry("400x150")
 
-button = customtkinter.CTkButton(app, text="my button", command=button_callback)
-button.pack(padx=20, pady=20)
+# Main entry point
+def main():
+    root = GUI()
+    main, controlPanel, videoLabel = SetupLayout(root)
 
-app.mainloop()
+    SetupButtons(root, controlPanel)
+
+    objectDetectionData = ObjectDetectionModel()
+
+    # Start video capture in a separate thread
+    video_thread = threading.Thread(
+        target=lambda: VideoCapture(root, objectDetectionData, videoLabel), 
+        daemon=True
+    )
+    video_thread.start()
+
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()
