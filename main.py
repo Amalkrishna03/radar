@@ -1,8 +1,27 @@
 import threading
 
+import cv2
+
 from gui.ttk import GUI, SetupButtons, SetupLayout
-from model.yolo import ObjectDetectionModel
 from model.capture import VideoCapture
+from model.yolo import DetectObjects, DoNothing
+from visual.compare import CompareNoise
+
+state = {
+    "isCapturing": True,
+    "isDetecting": True,
+    "isComparing": True,
+    "priority": {
+        "high": (200, 200, 400, 300),
+        "medium": (100, 100, 200, 150),
+    },
+    "interval": 1,
+    "priorityThreshold": {
+        "high": 10,
+        "medium": 20,
+        "low": 30,
+    },
+}
 
 
 # Main entry point
@@ -12,12 +31,20 @@ def main():
 
     SetupButtons(root, controlPanel)
 
-    objectDetectionData = ObjectDetectionModel()
+    capture = cv2.VideoCapture(0)
 
-    # Start video capture in a separate thread
+    if not capture.isOpened():
+        raise IOError("Cannot open webcam")
+
+    compare_thread = threading.Thread(
+        target=lambda: CompareNoise(capture, state),
+        daemon=True,
+    )
+    compare_thread.start()
+
     video_thread = threading.Thread(
-        target=lambda: VideoCapture(root, objectDetectionData, videoLabel), 
-        daemon=True
+        target=lambda: VideoCapture(capture, root, DoNothing, videoLabel),
+        daemon=True,
     )
     video_thread.start()
 

@@ -2,19 +2,19 @@ import customtkinter as ctk
 import cv2
 from PIL import Image, ImageTk
 import time
-from typing import Dict, Callable
-
-ObjectDetectorType = Dict[str, Callable]
 
 isCapturing = True
 
 
 def VideoCapture(
-    root: ctk.CTk, objectDetection: ObjectDetectorType, videoLabel: ctk.CTkLabel
+    capture: cv2.VideoCapture,
+    root: ctk.CTk,
+    DetectObjects,
+    videoLabel: ctk.CTkLabel,
 ):
     """Continuously capture and process video frames"""
     # Open webcam
-    cap = cv2.VideoCapture(0)
+    cap = capture
 
     def convertFrame(frame):
         """Convert OpenCV frame to CustomTkinter-compatible image"""
@@ -31,7 +31,7 @@ def VideoCapture(
                 break
 
             # Detect objects
-            processedFrame = objectDetection["DetectObjects"](frame)
+            processedFrame = DetectObjects(frame)
 
             # Convert and display frame
             photo = convertFrame(processedFrame)
@@ -48,9 +48,8 @@ def VideoCapture(
         print(f"Error in video capture: {e}")
     finally:
         cap.release()
-        
-        
-        
+
+
 # def create_webcam_app(objectDetector: ObjectDetectorType):
 #     """
 #     Create a functional webcam object detection application
@@ -64,4 +63,3 @@ def VideoCapture(
 #         )
 
 #     # Set up the UI
-    
