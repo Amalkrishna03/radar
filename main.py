@@ -10,7 +10,8 @@ from visual.preprocessing import DrawWrapped
 from utils.state import state
 
 internal = {
-    "renderActions": [DoNothing, DrawWrapped(state)]
+    "initial": [DrawWrapped(state)],
+    "something": [DetectObjects],
 }
 
 
@@ -36,7 +37,7 @@ def main():
         target=lambda: VideoCapture(
             capture,
             root,
-            lambda fm: RenderFrameActions(fm, internal["renderActions"]),
+            lambda fm: RenderFrameActions(fm, internal["initial"] if (not state["isDetecting"]) else internal["something"]),
             videoLabel,
             state
         ),

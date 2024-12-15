@@ -1,9 +1,10 @@
-from typing import TypedDict, Literal
+from typing import TypedDict, Literal, TypeVar, Generic
 
 state = {
     "isCapturing": True,
-    "isDetecting": True,
+    "isDetecting": False,
     "isComparing": True,
+    "isSaving": False,
     "priority": {
         "high": (200, 200, 400, 300),
         "medium": (100, 100, 200, 150),
@@ -16,11 +17,18 @@ state = {
     }
 }
 
+T = TypeVar('T')
+
+class Priority(Generic[T]):
+    high: T
+    medium: T
+    low: T
 
 class State(TypedDict):
     isCapturing: bool
     isDetecting: bool
     isComparing: bool
-    priority: dict[str, tuple[int, int, int, int]]
+    isSaving: bool
+    priority: Priority[tuple[int, int, int, int]]
     interval: int
-    priorityThreshold: dict[str, int]
+    priorityThreshold: Priority[int]

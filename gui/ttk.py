@@ -36,14 +36,17 @@ def SetupLayout(root: ctk.CTk):
     return  main, video, control, noise, message
 
 def SetupGraphEqualizer(noisePanel: ctk.CTkFrame):
-    def setup():
+    def setup(text:str):
         y = ctk.CTkFrame(noisePanel)
         y.pack(side=ctk.LEFT, fill="both")
+        
+        z = ctk.CTkLabel(y, width=10, height=1, text=text)
+        z.pack(side=ctk.TOP)
         
         return PixelStack(y)
     
     return {
-        key: setup().set_value
+        key: setup(key).set_value
         for key in listPriorityKeys
     }
 

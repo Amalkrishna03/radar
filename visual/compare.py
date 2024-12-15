@@ -7,12 +7,13 @@ from utils.state import State
 
 listPriorityKeys = ["low", "medium", "high"]
 
+limit = 70
+
 
 def CompareAction(
     old: cv2.typing.MatLike,
     new: cv2.typing.MatLike,
     threshold: int,
-    title: listPriorityKeys,
     action: callable,
 ):
     thread = threading.Thread(
@@ -24,6 +25,17 @@ def CompareAction(
 
 def CompareNoise(capture, state:State, actions: dict[listPriorityKeys, callable]):
     oldFrame = None
+    
+    def createStopper(action):
+        def actionWithStopper(value):
+            action(value)
+            if value >= limit:
+                state["isComparing"] = False
+                state["isDetecting"] = True
+                state["isSaving"] = True
+                
+            
+        return actionWithStopper
 
     while state["isComparing"]:
         ret1, frameNew = capture.read()
@@ -48,8 +60,7 @@ def CompareNoise(capture, state:State, actions: dict[listPriorityKeys, callable]
                     oldFrame[key],
                     newFrame[key],
                     state["priorityThreshold"][key],
-                    key,
-                    actions[key]
+                    createStopper(actions[key])
                 )
                 for key in listPriorityKeys
             ]

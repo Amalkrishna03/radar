@@ -26,7 +26,7 @@ def VideoCapture(
                 break
 
             # Detect objects
-            processedFrame = processFrame(frame) if state["isDetecting"] else frame
+            processedFrame = processFrame(frame)
 
             # Convert and display frame
             photo = convertFrame(processedFrame)

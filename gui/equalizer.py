@@ -1,13 +1,12 @@
 import colorsys
-import tkinter as tk
-
 import customtkinter as ctk
 
-from visual.compare import listPriorityKeys
-
+width=50
+height=500
+stack_size=10
 
 class PixelStack:
-    def __init__(self, root, width=50, height=500, stack_size=10):
+    def __init__(self, root):
         """
         Initialize the pixel stack visualization
 
@@ -22,8 +21,8 @@ class PixelStack:
         self.stack_size = stack_size
 
         # Create canvas
-        self.canvas = tk.Canvas(root, width=width, height=height, bg="white")
-        self.canvas.pack(side=ctk.LEFT)
+        self.canvas = ctk.CTkCanvas(root, width=width, height=height, bg="black")
+        self.canvas.pack(side=ctk.BOTTOM)
 
         # Create pixel stack rectangles
         self.pixels = []
@@ -47,8 +46,6 @@ class PixelStack:
                 outline="black",
             )
             self.pixels.append({"rect": rect, "color": color})
-            
-        self.set_value(30)
         # return self.canvas
 
     def _hsv_to_hex(self, h, s, v):

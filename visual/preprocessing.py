@@ -1,18 +1,20 @@
 from functools import reduce
+import customtkinter as ctk
 
 import cv2
 from PIL import Image, ImageTk
 from utils.state import State
 
-
+flip  = False
 threshold = 30
 # if 1, small changes will be detected easily
 
 def convertFrame(frame):
     """Convert OpenCV frame to CustomTkinter-compatible image"""
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frame = cv2.cvtColor(cv2.flip(frame, 1) if flip else frame, cv2.COLOR_BGR2RGB)
     img = Image.fromarray(frame)
-    img = img.resize((640, 480))  # Resize for consistent display
+    img = img.resize((640 * 2, 480 * 2))  # Resize for consistent display
+    
     return ImageTk.PhotoImage(image=img)
 
 
@@ -48,29 +50,32 @@ def ExtractPriority(frame: cv2.typing.MatLike, coordinates: tuple):  # type: ign
 
     return low, high
 
-def DrawRectangles(frame, rectangles):
+def DrawRectangles(frame:ctk.CTkFrame, rectangle:tuple, color=(0, 255, 0), thickness=1):
     """
-    Draw rectangles on the frame using functional approach.
+    Draw rectangles on the input frame
     
     Args:
         frame (numpy.ndarray): Input image frame
-        rectangles (list): List of rectangle coordinates 
-                           [(x1, y1, x2, y2), ...]
+        rectangles (tuple): rectangle coordinates 
+                           (x1, y1, x2, y2)
     
     Returns:
         numpy.ndarray: Frame with rectangles drawn
     """
-    return reduce(
-        lambda img, rect: cv2.rectangle(
-            img, 
-            (rect[0], rect[1]),  # Top-left corner
-            (rect[2], rect[3]),  # Bottom-right corner
-            (0, 255, 0),  # Green color
-            2  # Line thickness
-        ),
-        rectangles,
-        frame.copy()  # Start with a copy of the original frame
-    )
+    return cv2.rectangle(
+            frame.copy(), 
+            (rectangle[0], rectangle[1]),  # Top-left corner
+            (rectangle[2], rectangle[3]),  # Bottom-right corner
+            color, 
+            thickness,
+
+        )
     
 def DrawWrapped(data:State):
-    return lambda frame: DrawRectangles(frame, data["priority"].values())
+    def code(frame:ctk.CTkFrame): 
+        fh = DrawRectangles(frame, data["priority"]["high"], color=(0, 0, 255))
+        fm = DrawRectangles(fh, data["priority"]["medium"], color=(0, 255, 0))
+        
+        return fm
+    
+    return code
