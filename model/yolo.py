@@ -1,6 +1,7 @@
 from typing import Optional
 import cv2
 import numpy as np
+from typing import List
 from ultralytics import YOLO
 
 model_name: str = "yolov8n.pt"
@@ -34,5 +35,11 @@ def DoNothing(frame: np.ndarray) -> np.ndarray:
     Do nothing to the frame
     Returns the original frame
     """
+    return frame
+    
+def RenderFrameActions(frame: np.ndarray, actions: List[DoNothing]) -> np.ndarray:
+    for action in actions:
+        frame = action(frame)
+        
     return frame
     

@@ -2,51 +2,60 @@ import threading
 
 import cv2
 
-from gui.ttk import GUI, SetupButtons, SetupLayout
+from gui.ttk import GUI, SetupButtons, SetupLayout, SetupGraphEqualizer
 from model.capture import VideoCapture
-from model.yolo import DetectObjects, DoNothing
+from model.yolo import DetectObjects, DoNothing, RenderFrameActions
 from visual.compare import CompareNoise
+from visual.preprocessing import DrawWrapped
+from utils.state import state
 
-state = {
-    "isCapturing": True,
-    "isDetecting": True,
-    "isComparing": True,
-    "priority": {
-        "high": (200, 200, 400, 300),
-        "medium": (100, 100, 200, 150),
-    },
-    "interval": 1,
-    "priorityThreshold": {
-        "high": 10,
-        "medium": 20,
-        "low": 30,
-    },
+internal = {
+    "renderActions": [DoNothing, DrawWrapped(state)]
 }
 
 
 # Main entry point
 def main():
     root = GUI()
-    main, controlPanel, videoLabel = SetupLayout(root)
-
-    SetupButtons(root, controlPanel)
-
+    mainPanel, videoLabel, controlPanel, noisePanel, messagePanel = SetupLayout(root)
+    threeGraphs = SetupGraphEqualizer(noisePanel)
+       
     capture = cv2.VideoCapture(0)
+
 
     if not capture.isOpened():
         raise IOError("Cannot open webcam")
 
     compare_thread = threading.Thread(
-        target=lambda: CompareNoise(capture, state),
+        target=lambda: CompareNoise(capture, state, threeGraphs),
         daemon=True,
     )
     compare_thread.start()
 
     video_thread = threading.Thread(
-        target=lambda: VideoCapture(capture, root, DoNothing, videoLabel),
+        target=lambda: VideoCapture(
+            capture,
+            root,
+            lambda fm: RenderFrameActions(fm, internal["renderActions"]),
+            videoLabel,
+            state
+        ),
         daemon=True,
     )
     video_thread.start()
+    
+    def startObjectDetection(): 
+        if state["isDetecting"] is False:
+            state["isDetecting"] = True
+        
+    def stopObjectDetection(): 
+        if state["isDetecting"] is True:
+            state["isDetecting"] = False
+    
+    SetupButtons(root, controlPanel, {
+        "startObjectDetection": startObjectDetection,
+        "stopObjectDetection": stopObjectDetection,
+    })
 
     root.mainloop()
 

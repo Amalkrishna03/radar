@@ -1,40 +1,75 @@
 import customtkinter as ctk
+from gui.equalizer import PixelStack
 
+from visual.compare import listPriorityKeys
 
 def GUI():
     ctk.set_appearance_mode("Dark")
     ctk.set_default_color_theme("blue")
-    
+
     root = ctk.CTk()
     root.title("Object Detection Webcam")
-    root.geometry("800x600")
-    
+    root.attributes("-fullscreen", True)
+        
     return root
 
 def SetupLayout(root: ctk.CTk):
-    # Frame for video and controls
+    
     main = ctk.CTkFrame(root)
-    main.pack(expand=True, fill='both', padx=0, pady=0)
+    main.pack(side=ctk.LEFT, fill="both", expand=True)
+    
+    video = ctk.CTkLabel(main, text="")
+    video.pack(expand=True, fill='both', padx=0, pady=0)
+    
+    sidebar = ctk.CTkFrame(root)
+    sidebar.pack(side=ctk.LEFT, padx=10, pady=10, fill="both")
 
-    # Video display label
-    videoLabel = ctk.CTkLabel(main, text="")
-    videoLabel.pack(expand=True, fill='both', padx=0, pady=0)
+    noise = ctk.CTkFrame(sidebar)
+    noise.pack(side=ctk.TOP)
 
-    # Control frame
-    controlPanel = ctk.CTkFrame(main)
-    controlPanel.pack(fill='x', padx=0, pady=0)
+    message = ctk.CTkFrame(sidebar)
+    message.pack(side=ctk.TOP, padx=10, expand=True, fill="both")
+    
+    control = ctk.CTkFrame(sidebar)
+    control.pack(side=ctk.BOTTOM, pady=10, padx=10, fill="both")
 
-    return  main, controlPanel, videoLabel
+    return  main, video, control, noise, message
 
+def SetupGraphEqualizer(noisePanel: ctk.CTkFrame):
+    def setup():
+        y = ctk.CTkFrame(noisePanel)
+        y.pack(side=ctk.LEFT, fill="both")
+        
+        return PixelStack(y)
+    
+    return {
+        key: setup().set_value
+        for key in listPriorityKeys
+    }
 
-def SetupButtons(root:ctk.CTk, control_frame: ctk.CTkFrame):
-    # detect_button.pack(side='left', padx=5)
+def SetupButtons(root:ctk.CTk, control_frame: ctk.CTkFrame, actions: dict[str, callable]):
+    startObjectDetection = ctk.CTkButton(
+        control_frame, 
+        text="Start OD", 
+        command=actions["startObjectDetection"],
+        width=10
+    )
+    startObjectDetection.pack(side=ctk.LEFT)
+    
+    stopObjectDetection = ctk.CTkButton(
+        control_frame, 
+        text="Stop OD", 
+        command=actions["stopObjectDetection"],
+        width=10
+    )
+    stopObjectDetection.pack(side=ctk.LEFT, padx=5)
 
     quit_button = ctk.CTkButton(
         control_frame, 
-        text="Quit", 
-        command=root.quit
+        text="X", 
+        command=root.quit,
+        width=2
     )
-    quit_button.pack(side='left', padx=5)
+    quit_button.pack(side=ctk.RIGHT)
 
 

@@ -3,21 +3,26 @@ import threading
 import cv2
 
 from visual.preprocessing import FindVisualDifference, PreprocessFrame, ExtractPriority
+from utils.state import State
+
+listPriorityKeys = ["low", "medium", "high"]
 
 
 def CompareAction(
-    old: cv2.typing.MatLike, new: cv2.typing.MatLike, threshold: int, title: str
+    old: cv2.typing.MatLike,
+    new: cv2.typing.MatLike,
+    threshold: int,
+    title: listPriorityKeys,
+    action: callable,
 ):
     thread = threading.Thread(
-        target=lambda: print(
-            f"Visual difference in {title}: {FindVisualDifference(old, new, threshold)}%"
-        ),
+        target=lambda: action(FindVisualDifference(old, new, threshold)),
         daemon=True,
     )
     thread.start()
 
 
-def CompareNoise(capture, state):
+def CompareNoise(capture, state:State, actions: dict[listPriorityKeys, callable]):
     oldFrame = None
 
     while state["isComparing"]:
@@ -27,7 +32,7 @@ def CompareNoise(capture, state):
             raise IOError("Failed to capture new frame")
 
         grayNew = PreprocessFrame(frameNew)
-        
+
         copy, high = ExtractPriority(grayNew, state["priority"]["high"])
         low, medium = ExtractPriority(copy, state["priority"]["medium"])
 
@@ -36,14 +41,17 @@ def CompareNoise(capture, state):
             "medium": medium,
             "high": high,
         }
-        
-        if oldFrame is not None:
 
+        if oldFrame is not None:
             [
                 CompareAction(
-                    oldFrame[frame], newFrame[frame], state["priorityThreshold"][frame], frame
+                    oldFrame[key],
+                    newFrame[key],
+                    state["priorityThreshold"][key],
+                    key,
+                    actions[key]
                 )
-                for frame in ["low", "medium", "high"]
+                for key in listPriorityKeys
             ]
 
         time.sleep(state["interval"])
