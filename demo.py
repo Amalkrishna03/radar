@@ -1,10 +1,11 @@
-import os
+import cv2
 
-
-def main():
-    print(os.getenv("MY_VAR"))
-    print("Hello from radar!")
-
+from model.vector import GetNow, SaveSituation
+from model.vision import VisionModel
 
 if __name__ == "__main__":
-    main()
+    frame = cv2.imread("./image.png")
+    text = VisionModel(frame)
+
+    print(text)
+    SaveSituation(text, "1234567890", GetNow())
