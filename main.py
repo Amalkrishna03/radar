@@ -7,11 +7,18 @@ from model.capture import VideoCapture
 from model.yolo import DetectObjects, DoNothing, RenderFrameActions
 from visual.compare import CompareNoise
 from visual.preprocessing import DrawWrapped
-from utils.state import state
+from utils.state import load_state, LiveState
 
-internal = {
+state = load_state()
+
+liveState:LiveState = {
     "initial": [DrawWrapped(state)],
     "something": [DetectObjects],
+    
+    "isCapturing": True,
+    "isDetecting": False,
+    "isComparing": True,
+    "isSaving": False,
 }
 
 
@@ -28,7 +35,7 @@ def main():
         raise IOError("Cannot open webcam")
 
     compare_thread = threading.Thread(
-        target=lambda: CompareNoise(capture, state, threeGraphs),
+        target=lambda: CompareNoise(capture, state, liveState, threeGraphs),
         daemon=True,
     )
     compare_thread.start()
@@ -37,21 +44,20 @@ def main():
         target=lambda: VideoCapture(
             capture,
             root,
-            lambda fm: RenderFrameActions(fm, internal["initial"] if (not state["isDetecting"]) else internal["something"]),
-            videoLabel,
-            state
+            lambda fm: RenderFrameActions(fm, liveState["initial"] if (not liveState["isDetecting"]) else liveState["something"]),
+            videoLabel
         ),
         daemon=True,
     )
     video_thread.start()
     
     def startObjectDetection(): 
-        if state["isDetecting"] is False:
-            state["isDetecting"] = True
+        if liveState["isDetecting"] is False:
+            liveState["isDetecting"] = True
         
     def stopObjectDetection(): 
-        if state["isDetecting"] is True:
-            state["isDetecting"] = False
+        if liveState["isDetecting"] is True:
+            liveState["isDetecting"] = False
     
     SetupButtons(root, controlPanel, {
         "startObjectDetection": startObjectDetection,

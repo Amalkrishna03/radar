@@ -4,7 +4,6 @@ import customtkinter as ctk
 import cv2
 
 from visual.preprocessing import convertFrame
-from utils.state import State
 
 
 def VideoCapture(
@@ -12,7 +11,6 @@ def VideoCapture(
     root: ctk.CTk,
     processFrame: callable,
     videoLabel: ctk.CTkLabel,
-    state: State,
 ):
     """Continuously capture and process video frames"""
     # Open webcam

@@ -1,10 +1,8 @@
-from typing import TypedDict, Literal, TypeVar, Generic
+from typing import TypedDict, TypeVar, Generic
+import json
+import os
 
-state = {
-    "isCapturing": True,
-    "isDetecting": False,
-    "isComparing": True,
-    "isSaving": False,
+defaultState = {
     "priority": {
         "high": (200, 200, 400, 300),
         "medium": (100, 100, 200, 150),
@@ -16,6 +14,14 @@ state = {
         "low": 30,
     }
 }
+def load_state():
+    if os.path.exists("state.json"):
+        with open("state.json", "r") as file:
+            state = json.load(file)
+            
+            return state
+        
+    return defaultState
 
 T = TypeVar('T')
 
@@ -25,10 +31,14 @@ class Priority(Generic[T]):
     low: T
 
 class State(TypedDict):
+    priority: Priority[tuple[int, int, int, int]]
+    interval: int
+    priorityThreshold: Priority[int]
+    
+class LiveState(TypedDict):
+    initial: list
+    something: list
     isCapturing: bool
     isDetecting: bool
     isComparing: bool
     isSaving: bool
-    priority: Priority[tuple[int, int, int, int]]
-    interval: int
-    priorityThreshold: Priority[int]

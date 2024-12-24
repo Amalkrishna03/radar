@@ -3,7 +3,7 @@ import threading
 import cv2
 
 from visual.preprocessing import FindVisualDifference, PreprocessFrame, ExtractPriority
-from utils.state import State
+from utils.state import LiveState, State
 
 listPriorityKeys = ["low", "medium", "high"]
 
@@ -23,21 +23,21 @@ def CompareAction(
     thread.start()
 
 
-def CompareNoise(capture, state:State, actions: dict[listPriorityKeys, callable]):
+def CompareNoise(capture, state:State, liveState:LiveState, actions: dict[str, callable]):
     oldFrame = None
     
     def createStopper(action):
         def actionWithStopper(value):
             action(value)
             if value >= limit:
-                state["isComparing"] = False
-                state["isDetecting"] = True
-                state["isSaving"] = True
+                liveState["isComparing"] = False
+                liveState["isDetecting"] = True
+                liveState["isSaving"] = True
                 
             
         return actionWithStopper
 
-    while state["isComparing"]:
+    while liveState["isComparing"]:
         ret1, frameNew = capture.read()
         if not ret1:
             capture.release()
