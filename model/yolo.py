@@ -1,11 +1,11 @@
-from typing import Optional
-import cv2
 import numpy as np
 from typing import List
 from ultralytics import YOLO
 
 model_name: str = "yolov8n.pt"
 model = YOLO(model_name)
+
+state = False
 
 
 def DetectObjects(frame: np.ndarray) -> np.ndarray:
@@ -25,7 +25,7 @@ def DetectObjects(frame: np.ndarray) -> np.ndarray:
         boxes = result.boxes
         for box in boxes:
             cls = int(box.cls[0])
-            if model.names[cls] == "person":
+            if model.names[cls] == "person" and state:
                 print("Human detected!")
 
     return annotated_frame

@@ -23,8 +23,9 @@ def CompareAction(
     thread.start()
 
 
-def CompareNoise(capture, state:State, liveState:LiveState, actions: dict[str, callable]):
+def CompareNoise(capture, liveState:LiveState, actions: dict[str, callable]):
     oldFrame = None
+    state = State.get_instance()
     
     def createStopper(action):
         def actionWithStopper(value):
@@ -45,8 +46,8 @@ def CompareNoise(capture, state:State, liveState:LiveState, actions: dict[str, c
 
         grayNew = PreprocessFrame(frameNew)
 
-        copy, high = ExtractPriority(grayNew, state["priority"]["high"])
-        low, medium = ExtractPriority(copy, state["priority"]["medium"])
+        copy, high = ExtractPriority(grayNew, state.data["priority"]["high"])
+        low, medium = ExtractPriority(copy, state.data["priority"]["medium"])
 
         newFrame = {
             "low": low,
@@ -59,11 +60,11 @@ def CompareNoise(capture, state:State, liveState:LiveState, actions: dict[str, c
                 CompareAction(
                     oldFrame[key],
                     newFrame[key],
-                    state["priorityThreshold"][key],
+                    state.data["priorityThreshold"][key],
                     createStopper(actions[key])
                 )
                 for key in listPriorityKeys
             ]
 
-        time.sleep(state["interval"])
+        time.sleep(state.data["interval"])
         oldFrame = newFrame

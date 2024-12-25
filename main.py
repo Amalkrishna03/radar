@@ -7,14 +7,14 @@ from model.capture import VideoCapture
 from model.yolo import DetectObjects, DoNothing, RenderFrameActions
 from visual.compare import CompareNoise
 from visual.preprocessing import DrawWrapped
-from utils.state import load_state, LiveState
+from utils.state import LiveState, State
 
-state = load_state()
+state = State.get_instance()
+print(state)
 
-liveState:LiveState = {
-    "initial": [DrawWrapped(state)],
+liveState: LiveState = {
+    "initial": [DrawWrapped(state.data)],
     "something": [DetectObjects],
-    
     "isCapturing": True,
     "isDetecting": False,
     "isComparing": True,
@@ -27,15 +27,14 @@ def main():
     root = GUI()
     mainPanel, videoLabel, controlPanel, noisePanel, messagePanel = SetupLayout(root)
     threeGraphs = SetupGraphEqualizer(noisePanel)
-       
-    capture = cv2.VideoCapture(0)
 
+    capture = cv2.VideoCapture(0)
 
     if not capture.isOpened():
         raise IOError("Cannot open webcam")
 
     compare_thread = threading.Thread(
-        target=lambda: CompareNoise(capture, state, liveState, threeGraphs),
+        target=lambda: CompareNoise(capture, liveState, threeGraphs),
         daemon=True,
     )
     compare_thread.start()
@@ -44,25 +43,34 @@ def main():
         target=lambda: VideoCapture(
             capture,
             root,
-            lambda fm: RenderFrameActions(fm, liveState["initial"] if (not liveState["isDetecting"]) else liveState["something"]),
-            videoLabel
+            lambda fm: RenderFrameActions(
+                fm,
+                liveState["initial"]
+                if (not liveState["isDetecting"])
+                else liveState["something"],
+            ),
+            videoLabel,
         ),
         daemon=True,
     )
     video_thread.start()
-    
-    def startObjectDetection(): 
+
+    def startObjectDetection():
         if liveState["isDetecting"] is False:
             liveState["isDetecting"] = True
-        
-    def stopObjectDetection(): 
+
+    def stopObjectDetection():
         if liveState["isDetecting"] is True:
             liveState["isDetecting"] = False
-    
-    SetupButtons(root, controlPanel, {
-        "startObjectDetection": startObjectDetection,
-        "stopObjectDetection": stopObjectDetection,
-    })
+
+    SetupButtons(
+        root,
+        controlPanel,
+        {
+            "startObjectDetection": startObjectDetection,
+            "stopObjectDetection": stopObjectDetection,
+        },
+    )
 
     root.mainloop()
 

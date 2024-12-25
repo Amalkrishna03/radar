@@ -1885,6 +1885,7 @@ dependencies = [
     { name = "opencv-python" },
     { name = "torch" },
     { name = "torchvision" },
+    { name = "ttkbootstrap" },
     { name = "ultralytics", version = "8.3.23", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'arm64' or platform_system != 'Darwin' or sys_platform == 'darwin' or python_full_version >= '3.10'" },
     { name = "ultralytics", version = "8.3.49", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10' and platform_machine == 'arm64' and platform_system == 'Darwin' and sys_platform != 'darwin'" },
     { name = "vecs", extra = ["text-embedding"] },
@@ -1903,6 +1904,7 @@ requires-dist = [
     { name = "opencv-python", specifier = ">=4.10.0.84" },
     { name = "torch", specifier = ">=2.5.1" },
     { name = "torchvision", specifier = ">=0.20.1" },
+    { name = "ttkbootstrap", specifier = ">=1.10.1" },
     { name = "ultralytics", specifier = ">=8.3.23" },
     { name = "vecs", extras = ["text-embedding"], specifier = ">=0.4.5" },
 ]
@@ -2487,6 +2489,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/86/17/d9a5cf4fcf46291856d1e90762e36cbabd2a56c7265da0d1d9508c8e3943/triton-3.1.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0f34f6e7885d1bf0eaaf7ba875a5f0ce6f3c13ba98f9503651c1e6dc6757ed5c", size = 209506424 },
     { url = "https://files.pythonhosted.org/packages/78/eb/65f5ba83c2a123f6498a3097746607e5b2f16add29e36765305e4ac7fdd8/triton-3.1.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c8182f42fd8080a7d39d666814fa36c5e30cc00ea7eeeb1a2983dbb4c99a0fdc", size = 209551444 },
     { url = "https://files.pythonhosted.org/packages/c4/69/57e0fed438d547524e08bfedc587078314176ad1c15c8be904d3f03149ec/triton-3.1.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:aafa9a20cd0d9fee523cd4504aa7131807a864cd77dcf6efe7e981f18b8c6c11", size = 209460480 },
+]
+
+[[package]]
+name = "ttkbootstrap"
+version = "1.10.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pillow" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e7/9e/22845f8e68415f4246342f3eccc5939991445098e8c1c0cf60c459755d22/ttkbootstrap-1.10.1.tar.gz", hash = "sha256:53925525c4104f9e345627500dced2d0392ad74324b2a81467aaee3ffbe1a474", size = 125360 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e6/a8/01691c28bb6320f6872e4719140e108b101eddc986aa9d3625972e43ab1c/ttkbootstrap-1.10.1-py3-none-any.whl", hash = "sha256:c6a10ee5ea64051a0f8b75c20ef8e5f2417c62b4d0858c831683d4f2135aa573", size = 133005 },
 ]
 
 [[package]]

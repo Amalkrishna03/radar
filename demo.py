@@ -1,13 +1,17 @@
+import os
 import customtkinter as ctk
 import json
+
+width = 640 * 2
+height = 480 * 2
 
 class DrawingApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Drawing App")
 
-        self.canvas = ctk.CTkCanvas(root, bg="white")
-        self.canvas.pack(fill=ctk.BOTH, expand=True)
+        self.canvas = ctk.CTkCanvas(root, bg="red", width=width, height=height)
+        self.canvas.pack()
 
         self.pen_color = "black"
         self.drawing = False
@@ -44,10 +48,15 @@ class DrawingApp:
             self.last_x, self.last_y = x, y
             
     def load_data(self):
-        with open('canvas.json', 'r') as file:
-            data = json.load(file)
-            self.lines_data = data['lines']
-            
+        if os.path.exists("canvas.json"):
+            with open('canvas.json', 'r') as file:
+                data = json.load(file)
+                self.lines_data = data['lines']
+    
+        else:
+            print("> State file not found")
+            return
+                
         last = {
             'x': None,
             'y': None

@@ -3,7 +3,7 @@ import customtkinter as ctk
 
 import cv2
 from PIL import Image, ImageTk
-from utils.state import State
+from utils.state import StateType
 
 flip  = False
 threshold = 30
@@ -71,7 +71,7 @@ def DrawRectangles(frame:ctk.CTkFrame, rectangle:tuple, color=(0, 255, 0), thick
 
         )
     
-def DrawWrapped(data:State):
+def DrawWrapped(data:StateType):
     def code(frame:ctk.CTkFrame): 
         fh = DrawRectangles(frame, data["priority"]["high"], color=(0, 0, 255))
         fm = DrawRectangles(fh, data["priority"]["medium"], color=(0, 255, 0))

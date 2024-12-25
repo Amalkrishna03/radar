@@ -8,5 +8,10 @@
         "high": 10,
         "medium": 20,
         "low": 30
-    }
+    },
+    "anomalies": [
+        "person",
+        "car",
+        "phone"
+    ]
 }
