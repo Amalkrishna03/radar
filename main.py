@@ -4,6 +4,7 @@ import cv2
 
 from gui.ttk import GUI, SetupButtons, SetupLayout, SetupGraphEqualizer
 from model.capture import VideoCapture
+from model.vision import VisionModel
 from model.yolo import DetectObjects, DoNothing, RenderFrameActions
 from visual.compare import CompareNoise
 from visual.preprocessing import DrawWrapped
@@ -13,12 +14,25 @@ state = State.get_instance()
 print(state)
 
 liveState: LiveState = {
-    "initial": [DrawWrapped(state.data)],
-    "something": [DetectObjects],
     "isCapturing": True,
     "isDetecting": False,
+    "isAnomaly": False,
     "isComparing": True,
     "isSaving": False,
+}
+
+def RunVisionModel(frame, label):
+    text = VisionModel(frame, label)
+    print(">", text)
+
+observation = [DrawWrapped(state.data)]
+understanding = [RunVisionModel]
+detection = [DetectObjects(understanding, liveState)]
+
+functionMap = {
+    "observation": observation,
+    "detection": detection,
+    "understanding": understanding,
 }
 
 
@@ -45,9 +59,9 @@ def main():
             root,
             lambda fm: RenderFrameActions(
                 fm,
-                liveState["initial"]
+                functionMap["observation"]
                 if (not liveState["isDetecting"])
-                else liveState["something"],
+                else functionMap["detection"],
             ),
             videoLabel,
         ),

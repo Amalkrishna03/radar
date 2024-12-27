@@ -68,7 +68,6 @@ def DrawRectangles(frame:ctk.CTkFrame, rectangle:tuple, color=(0, 255, 0), thick
             (rectangle[2], rectangle[3]),  # Bottom-right corner
             color, 
             thickness,
-
         )
     
 def DrawWrapped(data:StateType):

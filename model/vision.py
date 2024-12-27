@@ -9,7 +9,7 @@ client = Groq(
 )
 
 
-def VisionModel(image: cv2.typing.MatLike):
+def VisionModel(image: cv2.typing.MatLike, label: str) -> str:
     retval, buffer = cv2.imencode('.png', image)
     base64_image = base64.b64encode(buffer).decode("utf-8")
     
