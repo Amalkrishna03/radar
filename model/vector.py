@@ -1,16 +1,12 @@
-import os
+import uuid
 from datetime import datetime
 
-import vecs
 from vecs.adapter import Adapter, ParagraphChunker, TextEmbedding
 
-# create vector store client
-vx = vecs.Client(
-    os.getenv("DB_CONNECTION"),
-)
+from utils.source import SupabaseVector
 
 # create a collection with an adapter
-imageSituation = vx.get_or_create_collection(
+imageSituation = SupabaseVector.get_or_create_collection(
     name="imageSituation",
     adapter=Adapter(
         [
@@ -20,25 +16,28 @@ imageSituation = vx.get_or_create_collection(
     ),
 )
 
+
 def GetNow():
     return datetime.now().timestamp()
 
 
-def SaveSituation(text: str, id: str, timestamp: float):
+def SaveSituation(text: str, timestamp: float, extraData: dict = {}):
+    data = {"timestamp": timestamp} | extraData
+    id = uuid.uuid4()
+
     # add records to the collection using text as the media type
     imageSituation.upsert(
         records=[
             (
                 id,
                 text,
-                {"timestamp": timestamp},
+                data,
             )
         ]
     )
 
 
-
 if __name__ == "__main__":
     epoch_time = GetNow()
 
-    SaveSituation("four score and seven years ago", "vec0", epoch_time)
+    SaveSituation("four score and seven years ago", epoch_time)

@@ -5,6 +5,7 @@ import cv2
 from gui.ttk import GUI, SetupButtons, SetupLayout, SetupGraphEqualizer
 from model.capture import VideoCapture
 from model.vision import VisionModel
+from model.vector import GetNow, SaveSituation
 from model.yolo import DetectObjects, DoNothing, RenderFrameActions
 from visual.compare import CompareNoise
 from visual.preprocessing import DrawWrapped
@@ -22,8 +23,10 @@ liveState: LiveState = {
 }
 
 def RunVisionModel(frame, label):
-    text = VisionModel(frame, label)
+    time = GetNow()
+    text = VisionModel(frame)
     print(">", text)
+    SaveSituation(text, time, {"label": label})
 
 observation = [DrawWrapped(state.data)]
 understanding = [RunVisionModel]
