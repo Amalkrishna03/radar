@@ -10,6 +10,7 @@ from model.yolo import DetectObjects, DoNothing, RenderFrameActions
 from utils.state import LiveState, State
 from visual.compare import CompareNoise
 from visual.preprocessing import DrawWrapped
+from visual.canvas import DrawingApp
 
 state = State.get_instance()
 print(state)
@@ -82,12 +83,24 @@ def main():
         if liveState["isDetecting"] is True:
             liveState["isDetecting"] = False
 
+    def EditPriority(priority: str):
+        def code():
+            canvas_thread = threading.Thread(
+                target=lambda: DrawingApp(priority),
+                daemon=True,
+            )
+            canvas_thread.start()
+
+        return code
+
     SetupButtons(
-        root,
         controlPanel,
         {
-            "startObjectDetection": startObjectDetection,
-            "stopObjectDetection": stopObjectDetection,
+            "Quit": root.quit,
+            "Start_Object_Detection": startObjectDetection,
+            "Stop_Object_Detection": stopObjectDetection,
+            "Edit_Priority_High": EditPriority("high"),
+            "Edit_Priority_Medium": EditPriority("medium"),
         },
     )
 
@@ -96,7 +109,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+
 # from fastapi import FastAPI
 # from fastapi.routing import APIRoute
 # from starlette.middleware.cors import CORSMiddleware

@@ -5,16 +5,20 @@ import cv2
 from PIL import Image, ImageTk
 from utils.state import StateType
 
-flip  = False
+flip = False
 threshold = 30
 # if 1, small changes will be detected easily
+
+width = 640 * 2
+height = 480 * 2
+
 
 def convertFrame(frame):
     """Convert OpenCV frame to CustomTkinter-compatible image"""
     frame = cv2.cvtColor(cv2.flip(frame, 1) if flip else frame, cv2.COLOR_BGR2RGB)
     img = Image.fromarray(frame)
     img = img.resize((640 * 2, 480 * 2))  # Resize for consistent display
-    
+
     return ImageTk.PhotoImage(image=img)
 
 
@@ -39,6 +43,8 @@ def FindVisualDifference(
 
 
 color = (0, 0, 0)
+
+
 def ExtractPriority(frame: cv2.typing.MatLike, coordinates: tuple):  # type: ignore
     x, y, w, h = coordinates
 
@@ -50,31 +56,35 @@ def ExtractPriority(frame: cv2.typing.MatLike, coordinates: tuple):  # type: ign
 
     return low, high
 
-def DrawRectangles(frame:ctk.CTkFrame, rectangle:tuple, color=(0, 255, 0), thickness=1):
+
+def DrawRectangles(
+    frame: ctk.CTkFrame, rectangle: tuple, color=(0, 255, 0), thickness=1
+):
     """
     Draw rectangles on the input frame
-    
+
     Args:
         frame (numpy.ndarray): Input image frame
-        rectangles (tuple): rectangle coordinates 
+        rectangles (tuple): rectangle coordinates
                            (x1, y1, x2, y2)
-    
+
     Returns:
         numpy.ndarray: Frame with rectangles drawn
     """
     return cv2.rectangle(
-            frame.copy(), 
-            (rectangle[0], rectangle[1]),  # Top-left corner
-            (rectangle[2], rectangle[3]),  # Bottom-right corner
-            color, 
-            thickness,
-        )
-    
-def DrawWrapped(data:StateType):
-    def code(frame:ctk.CTkFrame): 
+        frame.copy(),
+        (rectangle[0], rectangle[1]),  # Top-left corner
+        (rectangle[2], rectangle[3]),  # Bottom-right corner
+        color,
+        thickness,
+    )
+
+
+def DrawWrapped(data: StateType):
+    def code(frame: ctk.CTkFrame):
         fh = DrawRectangles(frame, data["priority"]["high"], color=(0, 0, 255))
         fm = DrawRectangles(fh, data["priority"]["medium"], color=(0, 255, 0))
-        
+
         return fm
-    
+
     return code
