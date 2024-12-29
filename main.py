@@ -2,14 +2,14 @@ import threading
 
 import cv2
 
-from gui.ttk import GUI, SetupButtons, SetupLayout, SetupGraphEqualizer
+from gui.ttk import GUI, SetupButtons, SetupGraphEqualizer, SetupLayout
 from model.capture import VideoCapture
-from model.vision import VisionModel
 from model.vector import GetNow, SaveSituation
+from model.vision import VisionModel
 from model.yolo import DetectObjects, DoNothing, RenderFrameActions
+from utils.state import LiveState, State
 from visual.compare import CompareNoise
 from visual.preprocessing import DrawWrapped
-from utils.state import LiveState, State
 
 state = State.get_instance()
 print(state)
@@ -22,11 +22,13 @@ liveState: LiveState = {
     "isSaving": False,
 }
 
+
 def RunVisionModel(frame, label):
     time = GetNow()
     text = VisionModel(frame)
     print(">", text)
     SaveSituation(text, time, {"label": label})
+
 
 observation = [DrawWrapped(state.data)]
 understanding = [RunVisionModel]
@@ -94,3 +96,19 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+# from fastapi import FastAPI
+# from fastapi.routing import APIRoute
+# from starlette.middleware.cors import CORSMiddleware
+
+# from api.main import api_router
+
+# app = FastAPI(title="RADAR")
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+# app.include_router(api_router, prefix="/api")
