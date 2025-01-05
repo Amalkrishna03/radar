@@ -8,9 +8,11 @@ from model.vector import GetNow, SaveSituation
 from model.vision import VisionModel
 from model.yolo import DetectObjects, DoNothing, RenderFrameActions
 from utils.state import LiveState, State
-from visual.compare import CompareNoise
-from visual.preprocessing import DrawWrapped
+from utils.storage import SaveToBucket
 from visual.canvas import DrawingApp
+from visual.compare import CompareNoise
+from visual.image import GetBase64
+from visual.preprocessing import DrawWrapped
 
 state = State.get_instance()
 print(state)
@@ -26,9 +28,14 @@ liveState: LiveState = {
 
 def RunVisionModel(frame, label):
     time = GetNow()
-    text = VisionModel(frame)
+    base64, bytes = GetBase64(frame)
+
+    text = VisionModel(base64)
     print(">", text)
-    SaveSituation(text, time, {"label": label})
+
+    id = SaveSituation(text, time, {"label": label})
+
+    SaveToBucket(bytes, id)
 
 
 observation = [DrawWrapped(state.data)]

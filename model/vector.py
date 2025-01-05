@@ -35,6 +35,8 @@ def SaveSituation(text: str, timestamp: float, extraData: dict = {}):
             )
         ]
     )
+    
+    return id
 
 
 if __name__ == "__main__":
