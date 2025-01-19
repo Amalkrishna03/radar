@@ -15,7 +15,6 @@ from visual.image import GetBase64
 from visual.preprocessing import DrawWrapped
 
 state = State.get_instance()
-print(state)
 
 liveState: LiveState = {
     "isCapturing": True,
@@ -28,7 +27,7 @@ liveState: LiveState = {
 
 def RunVisionModel(frame, label):
     time = GetNow()
-    base64, bytes = GetBase64(frame)
+    base64, bytes, _ = GetBase64(frame)
 
     text = VisionModel(base64)
     print(">", text)
@@ -38,7 +37,7 @@ def RunVisionModel(frame, label):
     SaveToBucket(bytes, id)
 
 
-observation = [DrawWrapped(state.data)]
+observation = [DrawWrapped(state.data["priority"])]
 understanding = [RunVisionModel]
 detection = [DetectObjects(understanding, liveState)]
 
@@ -50,15 +49,16 @@ functionMap = {
 
 
 # Main entry point
-def main():
+def main(capture: cv2.VideoCapture):
+    print("Starting main")
     root = GUI()
     mainPanel, videoLabel, controlPanel, noisePanel, messagePanel = SetupLayout(root)
     threeGraphs = SetupGraphEqualizer(noisePanel)
 
-    capture = cv2.VideoCapture(0)
+    # capture = cv2.VideoCapture(0)
 
-    if not capture.isOpened():
-        raise IOError("Cannot open webcam")
+    # if not capture.isOpened():
+    #     raise IOError("Cannot open webcam")
 
     compare_thread = threading.Thread(
         target=lambda: CompareNoise(capture, liveState, threeGraphs),
@@ -115,20 +115,8 @@ def main():
 
 
 if __name__ == "__main__":
+    capture = cv2.VideoCapture(0)
+    if not capture.isOpened():
+        raise IOError("Cannot open webcam")
+    
     main()
-
-# from fastapi import FastAPI
-# from fastapi.routing import APIRoute
-# from starlette.middleware.cors import CORSMiddleware
-
-# from api.main import api_router
-
-# app = FastAPI(title="RADAR")
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-# app.include_router(api_router, prefix="/api")

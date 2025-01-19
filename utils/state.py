@@ -2,8 +2,10 @@ from typing import TypedDict, TypeVar, Generic
 import json
 import os
 
+from utils.canvas import load_canvas
+
 defaultState = {
-    "priority": {
+    "oldpriority": {
         "high": (200, 200, 400, 300),
         "medium": (100, 100, 200, 150),
     },
@@ -42,19 +44,24 @@ def load_state():
 class State:
     _instance = None
 
-    def _init_(self, data=None):
+    def _init_(self, state_data=None, canvas_data=None):
         self.data
+        self.data["priority"]
 
     @classmethod
-    def get_instance(cls, data=None):
+    def get_instance(cls, state_data=None, canvas_data=None):
         if cls._instance is None:
             cls._instance = State()
             
-        if data is not None:
-            cls._instance.data = data
+        if state_data is not None:
+            cls._instance.data = state_data
+            
+        if canvas_data is not None:
+            cls._instance.data["priority"] = canvas_data
+            
         return cls._instance
 
-initialState = State.get_instance(load_state())
+initialState = State.get_instance(load_state(), load_canvas())
 
 
 T = TypeVar("T")

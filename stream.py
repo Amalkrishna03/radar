@@ -1,64 +1,81 @@
-from fastapi import FastAPI, Response
-from fastapi.responses import StreamingResponse
 import cv2
 import uvicorn
-from typing import Generator
-import numpy as np
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse, StreamingResponse
+# from fastapi.routing import APIRoute
+from fastapi.templating import Jinja2Templates
+# from starlette.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+# from api.main import api_router
 
-class Camera:
-    def __init__(self):
-        self.cap = cv2.VideoCapture(0)  # 0 is usually the built-in webcam
-        if not self.cap.isOpened():
-            raise RuntimeError("Could not start camera.")
+app = FastAPI(title="RADAR")
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+# app.include_router(api_router, prefix="/api")
 
-    def __del__(self):
-        if self.cap.isOpened():
-            self.cap.release()
+templates = Jinja2Templates(directory="templates")
 
-    def get_frame(self) -> bytes:
-        ret, frame = self.cap.read()
-        if not ret:
-            return None
-        
-        # Encode the frame in JPEG format
-        _, jpeg = cv2.imencode('.jpg', frame)
-        return jpeg.tobytes()
+isStreaming = True
 
-def generate_frames(camera: Camera) -> Generator[bytes, None, None]:
-    while True:
-        frame = camera.get_frame()
-        if frame is None:
-            break
-            
-        # Yield the frame in multipart format
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-# Create a single camera instance
-camera = Camera()
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/")
-async def index():
-    return Response(content="""
-        <html>
-            <head>
-                <title>Webcam Stream</title>
-            </head>
-            <body>
-                <h1>Live Webcam Stream</h1>
-                <img src="/video_feed" width="640" height="480" />
-            </body>
-        </html>
-    """, media_type="text/html")
 
-@app.get("/video_feed")
-async def video_feed():
-    return StreamingResponse(
-        generate_frames(camera),
-        media_type="multipart/x-mixed-replace; boundary=frame"
-    )
+@app.get("/start_stream")
+async def start_stream():
+    global isStreaming
+    isStreaming = True
+    return {"status": "started"}
 
-# if __name__ == "__main__":
-    # uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
+@app.get("/stop_stream")
+async def stop_stream():
+    global isStreaming
+    isStreaming = False
+    return {"status": "stopped"}
+
+
+# @app.on_event("shutdown")
+# async def shutdown_event():
+#     if cap.isOpened():
+#         cap.release()
+
+
+def main(capture: cv2.VideoCapture):
+    print("Starting stream")
+
+    def generate_frames():
+        global isStreaming
+        while isStreaming:
+            success, frame = capture.read()
+            if success:
+                # Convert frame to jpg
+                ret, buffer = cv2.imencode(".jpg", frame)
+                frame_bytes = buffer.tobytes()
+                yield (
+                    b"--frame\r\n"
+                    b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n"
+                )
+
+    @app.get("/video_feed")
+    async def video_feed():
+        return StreamingResponse(
+            generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame"
+        )
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+if __name__ == "__main__":
+    capture = cv2.VideoCapture(0)
+    if not capture.isOpened():
+        raise IOError("Cannot open webcam")
+    
+    main(capture)

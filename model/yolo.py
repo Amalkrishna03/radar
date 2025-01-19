@@ -64,6 +64,8 @@ def DoNothing(frame: np.ndarray) -> np.ndarray:
 
 def RenderFrameActions(frame: np.ndarray, actions: List[DoNothing]) -> np.ndarray:
     for action in actions:
-        frame = action(frame)
+        newframe = action(frame)
+        # if (newframe is None):
+        #     newframe = frame
 
-    return frame
+    return newframe

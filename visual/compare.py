@@ -23,7 +23,7 @@ def CompareAction(
     thread.start()
 
 
-def CompareNoise(capture, liveState:LiveState, actions: dict[str, callable]):
+def CompareNoise(capture:cv2.VideoCapture, liveState:LiveState, actions: dict[str, callable]):
     oldFrame = None
     state = State.get_instance()
     
