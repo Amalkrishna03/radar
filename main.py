@@ -4,14 +4,11 @@ import cv2
 
 from gui.ttk import GUI, SetupButtons, SetupGraphEqualizer, SetupLayout
 from model.capture import VideoCapture
-from model.vector import GetNow, SaveSituation
-from model.vision import VisionModel
 from model.yolo import DetectObjects, DoNothing, RenderFrameActions
 from utils.state import LiveState, State
-from utils.storage import SaveToBucket
+from utils.situation import RunSaveSituation
 from visual.canvas import DrawingApp
 from visual.compare import CompareNoise
-from visual.image import GetBase64
 from visual.preprocessing import DrawWrapped
 
 state = State.get_instance()
@@ -25,35 +22,24 @@ liveState: LiveState = {
 }
 
 
-def RunVisionModel(frame, label):
-    time = GetNow()
-    base64, bytes, _ = GetBase64(frame)
-
-    text = VisionModel(base64)
-    print(">", text)
-
-    id = SaveSituation(text, time, {"label": label})
-
-    SaveToBucket(bytes, id)
-
-
-observation = [DrawWrapped(state.data["priority"])]
-understanding = [RunVisionModel]
-detection = [DetectObjects(understanding, liveState)]
-
-functionMap = {
-    "observation": observation,
-    "detection": detection,
-    "understanding": understanding,
-}
-
-
 # Main entry point
 def main(capture: cv2.VideoCapture):
     print("Starting main")
     root = GUI()
-    mainPanel, videoLabel, controlPanel, noisePanel, messagePanel = SetupLayout(root)
+    mainPanel, videoLabel, controlPanel, noisePanel, messagePanel, video1, video2 = (
+        SetupLayout(root)
+    )
     threeGraphs = SetupGraphEqualizer(noisePanel)
+
+    observation = [DrawWrapped(state.data["priority"])]
+    understanding = [RunSaveSituation]
+    detection = [DetectObjects(understanding, liveState)]
+
+    functionMap = {
+        "observation": observation,
+        "detection": detection,
+        "understanding": understanding,
+    }
 
     # capture = cv2.VideoCapture(0)
 
@@ -118,5 +104,5 @@ if __name__ == "__main__":
     capture = cv2.VideoCapture(0)
     if not capture.isOpened():
         raise IOError("Cannot open webcam")
-    
-    main()
+
+    main(capture)

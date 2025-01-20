@@ -1,9 +1,11 @@
-import time
 import threading
+import time
+
+import customtkinter as ctk
 import cv2
 
-from visual.preprocessing import FindVisualDifference, PreprocessFrame, ExtractPriority
 from utils.state import LiveState, State
+from visual.preprocessing import ExtractPriority, FindVisualDifference, PreprocessFrame
 
 listPriorityKeys = ["low", "medium", "high"]
 
@@ -23,10 +25,15 @@ def CompareAction(
     thread.start()
 
 
-def CompareNoise(capture:cv2.VideoCapture, liveState:LiveState, actions: dict[str, callable]):
+def CompareNoise(
+    capture: cv2.VideoCapture,
+    liveState: LiveState,
+    actions: dict[str, callable],
+    # videoLabel: ctk.CTkLabel,
+):
     oldFrame = None
     state = State.get_instance()
-    
+
     def createStopper(action):
         def actionWithStopper(value):
             action(value)
@@ -34,8 +41,7 @@ def CompareNoise(capture:cv2.VideoCapture, liveState:LiveState, actions: dict[st
                 liveState["isComparing"] = False
                 liveState["isDetecting"] = True
                 liveState["isSaving"] = True
-                
-            
+
         return actionWithStopper
 
     while liveState["isComparing"]:
@@ -61,7 +67,7 @@ def CompareNoise(capture:cv2.VideoCapture, liveState:LiveState, actions: dict[st
                     oldFrame[key],
                     newFrame[key],
                     state.data["priorityThreshold"][key],
-                    createStopper(actions[key])
+                    createStopper(actions[key]),
                 )
                 for key in listPriorityKeys
             ]

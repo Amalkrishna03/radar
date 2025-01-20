@@ -19,8 +19,28 @@ def SetupLayout(root: ctk.CTk):
     main = ctk.CTkFrame(root)
     main.pack(side=ctk.LEFT, fill="both", expand=True)
 
-    video = ctk.CTkLabel(main, text="")
-    video.pack(expand=True, fill="both", padx=0, pady=0)
+    grid = ctk.CTkFrame(main)
+    grid.pack(expand=True, fill="both", padx=0, pady=0)
+    grid.configure(fg_color="#EDECEC")
+    
+    
+    frame = ctk.CTkFrame(master=grid)
+    frame.grid(row=1, column=1)
+    
+    frame1 = ctk.CTkFrame(master=grid)
+    frame1.grid(row=1, column=2)
+    
+    frame2 = ctk.CTkFrame(master=grid)
+    frame2.grid(row=2, column=1)
+    
+    video = ctk.CTkLabel(master=frame)
+    video.pack(side=ctk.TOP, padx=10, pady=10)
+
+    video1 = ctk.CTkLabel(master=frame1, text="1")
+    video1.pack(side=ctk.TOP, padx=10, pady=10)
+
+    video2 = ctk.CTkLabel(master=frame2, text="2")
+    video2.pack(side=ctk.TOP, padx=10, pady=10)
 
     sidebar = ctk.CTkFrame(root)
     sidebar.pack(side=ctk.LEFT, padx=10, pady=10, fill="both")
@@ -34,7 +54,7 @@ def SetupLayout(root: ctk.CTk):
     control = ctk.CTkFrame(sidebar)
     control.pack(side=ctk.BOTTOM, pady=10, padx=10, fill="both")
 
-    return main, video, control, noise, message
+    return main, video, control, noise, message, video1, video2
 
 
 def SetupGraphEqualizer(noisePanel: ctk.CTkFrame):
