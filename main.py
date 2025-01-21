@@ -27,3 +27,5 @@ if __name__ == "__main__":
     
     software_thread.join()
     stream_thread.join()
+    
+# uv run ./main.py

@@ -106,3 +106,5 @@ if __name__ == "__main__":
         raise IOError("Cannot open webcam")
 
     main(capture)
+    
+# uv run software.py
