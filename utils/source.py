@@ -3,6 +3,7 @@ import os
 import vecs
 from groq import Groq
 from supabase import Client, create_client
+from supabase import PostgrestAPIResponse as APIResponse
 
 GroqClient = Groq(
     api_key=os.getenv("GROQ_API_KEY"),

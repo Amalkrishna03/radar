@@ -1,7 +1,8 @@
-from utils.storage import SaveToBucket
-from visual.image import GetBase64
-from model.vector import GetNow, SaveSituation
+from model.vector import GetNow, ParseIds, SaveSituation, SearchSituation
 from model.vision import VisionModel
+from utils.database import SaveSituationDB, SearchSituationDB
+from utils.storage import CreatePublicURL, GetURL, SaveToBucket, SearchInBucket
+from visual.image import GetBase64
 
 
 def RunSaveSituation(frame, label):
@@ -14,3 +15,29 @@ def RunSaveSituation(frame, label):
     id = SaveSituation(text, time, {"label": label})
 
     SaveToBucket(bytes, id)
+
+    print(
+        SaveSituationDB(
+            id.__str__(), text, GetURL(id), time, {"label": label} if label else None
+        )
+    )
+
+
+def RunSearchSituation(q: str):
+    ids = SearchSituation(q)
+
+    if len(ids) == 0:
+        return None
+
+    (ids, idKeys) = ParseIds(ids)
+
+    print(idKeys)
+
+    data = SearchSituationDB(idKeys)
+
+    print(data)
+
+    if len(data) == 0:
+        return None
+
+    return CreatePublicURL(idKeys)

@@ -1,3 +1,4 @@
+import re
 import uuid
 from datetime import datetime
 
@@ -21,6 +22,17 @@ def GetNow():
     return datetime.now().timestamp()
 
 
+def ParseIds(results: list[str]):
+    dict = {}
+    for result in results:
+        id = re.sub(r"_para_\d+$", "", result)
+        if id not in dict:
+            dict[id] = 0
+        dict[id] += 1
+
+    return dict, list(dict.keys())
+
+
 def SaveSituation(text: str, timestamp: float, extraData: dict = {}):
     data = {"timestamp": timestamp} | extraData
     id = uuid.uuid4()
@@ -35,8 +47,18 @@ def SaveSituation(text: str, timestamp: float, extraData: dict = {}):
             )
         ]
     )
-    
+
     return id
+
+
+def SearchSituation(text: str):
+    results = imageSituation.query(
+        text,
+        # include_metadata=True,
+        limit=10,
+    )
+
+    return results
 
 
 if __name__ == "__main__":

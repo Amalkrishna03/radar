@@ -16,8 +16,8 @@ def GetBase64(image: cv2.typing.MatLike):
     return None
 
 
-def GetBytes(image: cv2.typing.MatLike):
-    success, buffer = cv2.imencode(".png", image)
+def GetBytes(image: cv2.typing.MatLike, format: str = ".png"):
+    success, buffer = cv2.imencode(format, image)
 
     if success:
         return buffer.tobytes()
@@ -29,3 +29,12 @@ def ByteToImage(data: bytes):
     nparr = np.frombuffer(data, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     return img
+
+
+def ImageToStreamBytes(image: cv2.typing.MatLike):
+    frame_bytes = GetBytes(image, ".jpg")
+
+    if frame_bytes:
+        return b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n"
+
+    return None
