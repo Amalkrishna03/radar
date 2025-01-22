@@ -1,10 +1,13 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from api.main import api_router
 
 app = FastAPI(title="RADAR")
+
+app.mount("/", StaticFiles(directory="web/dist"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
