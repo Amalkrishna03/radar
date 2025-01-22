@@ -6,7 +6,7 @@ Run Entire Software
 uv run --env-file .env main.py
 ```
 
-Run Fastapi Server
+Run FastAPI Server
 
 ```bash
 uv run --env-file .env fastapi dev server.py
@@ -16,7 +16,6 @@ Run Test
 
 ```bash
 uv run test.py
-
 ```
 
 Run Software only
@@ -25,7 +24,7 @@ Run Software only
 uv run software.py
 ```
 
-Stream Webcam Video
+Stream Webcam video only
 
 ```bash 
 uv run stream.py

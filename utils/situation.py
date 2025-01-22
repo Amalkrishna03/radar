@@ -1,7 +1,7 @@
 from model.vector import GetNow, ParseIds, SaveSituation, SearchSituation
 from model.vision import VisionModel
 from utils.database import SaveSituationDB, SearchSituationDB
-from utils.storage import CreatePublicURL, GetURL, SaveToBucket, SearchInBucket
+from utils.storage import CreatePublicURLs, GetURL, SaveToBucket
 from visual.image import GetBase64
 
 
@@ -40,4 +40,4 @@ def RunSearchSituation(q: str):
     if len(data) == 0:
         return None
 
-    return CreatePublicURL(idKeys)
+    return CreatePublicURLs(idKeys)

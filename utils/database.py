@@ -1,6 +1,3 @@
-import uuid
-from datetime import datetime
-
 from utils.source import APIResponse, SupabaseClient
 
 

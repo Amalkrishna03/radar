@@ -22,7 +22,7 @@ def SearchInBucket(id: str, bucket: str = "anomalies"):
     return response
 
 
-def CreatePublicURL(ids: list[str], bucket: str = "anomalies"):
+def CreatePublicURLs(ids: list[str], bucket: str = "anomalies"):
     response = SupabaseClient.storage.from_(bucket).create_signed_urls(
         [GetURL(id) for id in ids], 180
     )
@@ -33,6 +33,13 @@ def CreatePublicURL(ids: list[str], bucket: str = "anomalies"):
         dictionary[res["path"]] = res["signedUrl"]
 
     return dictionary
+
+def CreatePublicURL(id: str, bucket: str = "anomalies"):
+    response = SupabaseClient.storage.from_(bucket).create_signed_url(
+        GetURL(id), 180
+    )
+
+    return response
 
 
 def DownloadImage(path: str, bucket: str = "anomalies"):
