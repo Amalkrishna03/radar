@@ -1,21 +1,34 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from api.main import api_router
+from utils.source import config
 
 app = FastAPI(title="RADAR")
 
-app.mount("/", StaticFiles(directory="web/dist"), name="static")
+if config["ENV"] == "production":
+    app.mount("/", StaticFiles(directory="web/dist/", html=True), name="static")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if config["ENV"] == "development":
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    @app.get("/")
+    @app.get("/{index}")
+    async def index(request: Request):
+        url = f"{config['FRONTEND']}{request.url.path}"
+        response = RedirectResponse(url=url)
+        return response
+
+
 app.include_router(api_router, prefix="/api")
 
 if __name__ == "__main__":
