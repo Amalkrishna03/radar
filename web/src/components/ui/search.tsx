@@ -177,7 +177,7 @@ export function AsyncSelect<T>({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "justify-between",
+            "justify-between h-10 w-full md:grow-0 grow rounded-xl",
             disabled && "opacity-50 cursor-not-allowed",
             triggerClassName
           )}
@@ -192,7 +192,7 @@ export function AsyncSelect<T>({
           <ChevronsUpDown className="opacity-50" size={10} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent style={{ width: width }} className={cn("p-0 rounded-xl overflow-hidden", className)}>
+      <PopoverContent style={{ width: width }} className={cn("p-0 rounded-xl mt-2 w-full overflow-hidden", className)}>
         <Command shouldFilter={false}>
           <div className="relative border-b w-full">
             <CommandInput

@@ -1,7 +1,8 @@
 const LiveComponents = () => {
+    const src = "https://github.com/user-attachments/assets/42645a0c-adf7-4c21-8502-2b6979ca01a1"
     return (
-        <div className="rounded-xl overflow-hidden h-96 w-full bg-red-400">
-            <img id="video-feed" src="/video_feed" className="w-full h-auto border-0" />
+        <div className="rounded-xl overflow-hidden w-full h-full">
+            <img id="video-feed" src={src} className="w-full h-auto border-0" />
         </div>
     );
 }

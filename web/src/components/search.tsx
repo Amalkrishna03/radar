@@ -78,8 +78,7 @@ const SearchEvents = () => {
             placeholder="Search events..."
             value={selectedEvent}
             onChange={setSelectedEvent}
-            width="100%"
-            className=""
+            className="w-full"
         />
     );
 }
