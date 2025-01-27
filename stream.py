@@ -2,7 +2,7 @@ import cv2
 import uvicorn
 from fastapi.responses import StreamingResponse
 
-from server import app
+from server import app, main as MainServer
 from visual.image import ImageToStreamBytes
 
 isStreaming = True
@@ -39,13 +39,15 @@ def main(capture: cv2.VideoCapture):
         return StreamingResponse(
             generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame"
         )
+        
+    MainServer()
 
     # @app.lifespan("/live/shutdown")
     # async def shutdown_event():
     #     if capture.isOpened():
     #         capture.release()
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0",  port=4000)
 
 
 if __name__ == "__main__":

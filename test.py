@@ -1,6 +1,6 @@
-from utils.situation import RunSearchSituation
+from utils.source import config
 
 if __name__ == "__main__":
-    print(RunSearchSituation("black person in room"))
+    print(config)
 
 # uv run test.py
