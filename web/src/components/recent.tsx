@@ -8,19 +8,17 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { useQuery } from "../hooks/fetcher"
 
-export default function RecentComponents() {
-  const { data, error, isLoading, isValidating, mutate } = useQuery(
-    "/api/events/"
-  );
+export default function RecentComponents({ data }: { data: any[] }) {
+  if (!Array.isArray(data)) return null;
+
   return (
     <Carousel>
       <CarouselContent>
-        {Array.from({ length: 5 }).map((_, index) => (
+        {data.map((event, index) => (
           <CarouselItem key={index}>
             <Card className="rounded-2xl overflow-hidden">
-              <img src="https://github.com/user-attachments/assets/42645a0c-adf7-4c21-8502-2b6979ca01a1" />
+              <img src={event.url} />
             </Card>
           </CarouselItem>
         ))}

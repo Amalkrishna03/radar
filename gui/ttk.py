@@ -33,7 +33,7 @@ def SetupLayout(root: ctk.CTk):
     frame2 = ctk.CTkFrame(master=grid)
     frame2.grid(row=2, column=1)
     
-    video = ctk.CTkLabel(master=frame)
+    video = ctk.CTkLabel(master=frame, text="")
     video.pack(side=ctk.TOP, padx=10, pady=10)
 
     video1 = ctk.CTkLabel(master=frame1, text="1")

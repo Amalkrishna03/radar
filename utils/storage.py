@@ -39,7 +39,7 @@ def CreatePublicURL(id: str, bucket: str = "anomalies"):
         GetURL(id), 180
     )
 
-    return response
+    return response['signedURL']
 
 
 def DownloadImage(path: str, bucket: str = "anomalies"):

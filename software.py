@@ -31,7 +31,7 @@ def main(capture: cv2.VideoCapture):
     )
     threeGraphs = SetupGraphEqualizer(noisePanel)
 
-    observation = [DrawWrapped(state.data["priority"])]
+    observation = [DrawWrapped(state.data)]
     understanding = [RunSaveSituation]
     detection = [DetectObjects(understanding, liveState)]
 

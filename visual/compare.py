@@ -5,7 +5,7 @@ import customtkinter as ctk
 import cv2
 
 from utils.state import LiveState, State
-from visual.preprocessing import ExtractPriority, FindVisualDifference, PreprocessFrame
+from visual.preprocessing import ExtractPriority, FindVisualDifference, PreprocessFrame, ExtractPriorityOld
 
 listPriorityKeys = ["low", "medium", "high"]
 
@@ -52,8 +52,11 @@ def CompareNoise(
 
         grayNew = PreprocessFrame(frameNew)
 
-        copy, high = ExtractPriority(grayNew, state.data["priority"]["high"])
-        low, medium = ExtractPriority(copy, state.data["priority"]["medium"])
+        # copy, high = ExtractPriority(grayNew, state.data["priority"]["high"])
+        # low, medium = ExtractPriority(copy, state.data["priority"]["medium"])
+        
+        copy, high = ExtractPriorityOld(grayNew, state.data["oldpriority"]["high"])
+        low, medium = ExtractPriorityOld(copy, state.data["oldpriority"]["medium"])
 
         newFrame = {
             "low": low,

@@ -1,8 +1,6 @@
 import cv2
 import uvicorn
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, StreamingResponse
-from fastapi.templating import Jinja2Templates
+from fastapi.responses import StreamingResponse
 
 from server import app
 from visual.image import ImageToStreamBytes
@@ -10,14 +8,14 @@ from visual.image import ImageToStreamBytes
 isStreaming = True
 
 
-@app.get("/start_stream")
+@app.get("/live/start_stream")
 async def start_stream():
     global isStreaming
     isStreaming = True
     return {"status": "started"}
 
 
-@app.get("/stop_stream")
+@app.get("/live/stop_stream")
 async def stop_stream():
     global isStreaming
     isStreaming = False
@@ -36,13 +34,13 @@ def main(capture: cv2.VideoCapture):
                 if streamData:
                     yield streamData
 
-    @app.get("/video_feed")
+    @app.get("/live/stream")
     async def video_feed():
         return StreamingResponse(
             generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame"
         )
 
-    # @app.lifespan("shutdown")
+    # @app.lifespan("/live/shutdown")
     # async def shutdown_event():
     #     if capture.isOpened():
     #         capture.release()
@@ -51,12 +49,6 @@ def main(capture: cv2.VideoCapture):
 
 
 if __name__ == "__main__":
-    templates = Jinja2Templates(directory="templates")
-
-    @app.get("/", response_class=HTMLResponse)
-    async def root(request: Request):
-        return templates.TemplateResponse("index.html", {"request": request})
-
     capture = cv2.VideoCapture(0)
     if not capture.isOpened():
         raise IOError("Cannot open webcam")

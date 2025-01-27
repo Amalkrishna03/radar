@@ -124,11 +124,16 @@ def DrawPolygon(frame: ctk.CTkFrame, points: np.ndarray, color=(0, 255, 0), thic
     )
 
 
-def DrawWrapped(priority):
+def DrawWrapped(data):
+    priority = data["priority"]
+    oldpriority = data["oldpriority"]
     def code(frame: ctk.CTkFrame):
         fh = DrawPolygon(frame, priority["high"], color=(0, 0, 255))
         fm = DrawPolygon(fh, priority["medium"], color=(0, 255, 0))
+        
+        oh = DrawRectangles(fm, oldpriority["high"], color=(0, 0, 255))
+        om = DrawRectangles(oh, oldpriority["medium"], color=(0, 255, 0))
 
-        return fm
+        return om
 
     return code

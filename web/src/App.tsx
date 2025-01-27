@@ -6,8 +6,15 @@ import { Button } from "./components/ui/button"
 import { PersonStandingIcon } from "lucide-react"
 import { Card } from "./components/ui/card"
 import CountComponent from "./components/count"
+import { useQuery } from "@/hooks/fetcher"
 
 function App() {
+    const { data, error, isLoading, isValidating, mutate } = useQuery(
+      "/api/events/images"
+    );
+  
+    console.log(data);
+  
   return (
     <main className="flex flex-col gap-3 justify-between min-h-screen p-5">
       <div className="flex  md:flex-row gap-3 flex-col h-full">
@@ -15,7 +22,7 @@ function App() {
           <LiveComponents />
         </Card>
         <Card className="p-2 flex-row flex gap-2">
-          <RecentComponents />
+          <RecentComponents data={data} />
         </Card>
         <div className="flex flex-row md:flex-col gap-2 w-full">
           <div className="flex flex-row md:w-full gap-2">
