@@ -9,7 +9,7 @@ from visual.preprocessing import ExtractPriority, FindVisualDifference, Preproce
 
 listPriorityKeys = ["low", "medium", "high"]
 
-limit = 70
+limit = 60
 
 
 def CompareAction(
@@ -52,11 +52,11 @@ def CompareNoise(
 
         grayNew = PreprocessFrame(frameNew)
 
-        # copy, high = ExtractPriority(grayNew, state.data["priority"]["high"])
-        # low, medium = ExtractPriority(copy, state.data["priority"]["medium"])
+        copy, high = ExtractPriority(grayNew, state.data["priority"]["high"])
+        low, medium = ExtractPriority(copy, state.data["priority"]["medium"])
         
-        copy, high = ExtractPriorityOld(grayNew, state.data["oldpriority"]["high"])
-        low, medium = ExtractPriorityOld(copy, state.data["oldpriority"]["medium"])
+        # copy, high = ExtractPriorityOld(grayNew, state.data["oldpriority"]["high"])
+        # low, medium = ExtractPriorityOld(copy, state.data["oldpriority"]["medium"])
 
         newFrame = {
             "low": low,

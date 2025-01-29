@@ -45,7 +45,6 @@ def DetectObjects(listOfFunctions: List[Callable], liveState: LiveState):
                 label = model.names[cls]
 
                 if checkAnomalies(label) and not liveState["isAnomaly"]:
-                    print(f"> {label} detected!")
                     liveState["isAnomaly"] = True
                     iterateAndRun(frame, label)
 

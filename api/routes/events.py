@@ -15,9 +15,11 @@ async def events(q: Union[str, None] = None):
 
     events = {}
     for e in data:
+        e["url"] = CreatePublicURL(e["id"])
         events[str(e["timestamp"])] = e
 
-    return events
+    return {"events": events, "data": data}
+
 
 @router.get("/images")
 async def eventsWithImages(q: Union[str, None] = None):
@@ -27,8 +29,6 @@ async def eventsWithImages(q: Union[str, None] = None):
         e["url"] = CreatePublicURL(e["id"])
 
     return data
-
-
 
 
 @router.get("/{id}")

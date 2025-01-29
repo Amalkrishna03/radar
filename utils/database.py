@@ -2,7 +2,7 @@ from utils.source import APIResponse, SupabaseClient
 
 
 def SearchSituationDB(ids: list[str], table: str = "events"):
-    response = SupabaseClient.table(table).select("*").in_("id", ids).execute()  # type: APIResponse
+    response = SupabaseClient.table(table).select("*").order("timestamp", desc=True).in_("id", ids).execute()  # type: APIResponse
 
     print(response)
 

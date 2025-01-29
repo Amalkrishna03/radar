@@ -181,7 +181,6 @@ export function AsyncSelect<T>({
             disabled && "opacity-50 cursor-not-allowed",
             triggerClassName
           )}
-          style={{ width: width }}
           disabled={disabled}
         >
           {selectedOption ? (
@@ -192,7 +191,7 @@ export function AsyncSelect<T>({
           <ChevronsUpDown className="opacity-50" size={10} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent style={{ width: width }} className={cn("p-0 rounded-xl mt-2 w-full overflow-hidden", className)}>
+      <PopoverContent className={cn("p-0 mx-5 !w-[calc(100vw-45px)] rounded-xl mt-2 md:max-w-96 overflow-hidden", className)}>
         <Command shouldFilter={false}>
           <div className="relative border-b w-full">
             <CommandInput

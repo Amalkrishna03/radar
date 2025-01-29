@@ -11,7 +11,7 @@ class Event(BaseModel):
     extraData: Optional[dict] = None
 
 def GetEvents() -> list[Event]:
-    response = SupabaseClient.table("events").select("*").execute()
+    response = SupabaseClient.table("events").select("*").order("timestamp", desc=True).execute()
 
     return response.data
 

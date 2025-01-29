@@ -1,20 +1,19 @@
+import { Loader2 } from "lucide-react"
+import CountComponent from "./components/count"
+import EventGraph from "./components/events"
 import LiveComponents from "./components/live"
 import RecentComponents from "./components/recent"
-import EventGraph from "./components/events"
 import SearchEvents from "./components/search"
-import { Button } from "./components/ui/button"
-import { PersonStandingIcon } from "lucide-react"
 import { Card } from "./components/ui/card"
-import CountComponent from "./components/count"
-import { useQuery } from "@/hooks/fetcher"
+import { options, useQuery } from "./hooks/fetcher"
 
 function App() {
-    const { data, error, isLoading, isValidating, mutate } = useQuery(
-      "/api/events/images"
-    );
-  
-    console.log(data);
-  
+  const { data, error, isLoading, isValidating, mutate } = useQuery(
+    "/api/events/", undefined, options
+  );
+
+  console.log(data);
+
   return (
     <main className="flex flex-col gap-3 justify-between min-h-screen p-5">
       <div className="flex  md:flex-row gap-3 flex-col h-full">
@@ -22,26 +21,22 @@ function App() {
           <LiveComponents />
         </Card>
         <Card className="p-2 flex-row flex gap-2">
-          <RecentComponents data={data} />
+          {isLoading ? <Loader2 className="m-auto animate-spin" /> :
+            <RecentComponents data={data?.data} />}
         </Card>
         <div className="flex flex-row md:flex-col gap-2 w-full">
-          <div className="flex flex-row md:w-full gap-2">
-            <Button size={"icon"} variant={"default"}>
-              <PersonStandingIcon />
-            </Button>
-            <Button size={"icon"} variant={"default"}>
-              <PersonStandingIcon />
-            </Button>
-            <Button size={"icon"} variant={"default"}>
-              <PersonStandingIcon />
-            </Button>
-          </div>
-          <SearchEvents />
+          <SearchEvents mutate={mutate} />
         </div>
       </div>
       <div className="flex flex-col w-full md:flex-row gap-3">
-        <EventGraph />
-        <CountComponent />
+        <Card className="w-full min-h-32 flex flex-col">
+          {isLoading ? <Loader2 className="m-auto animate-spin" /> :
+            <EventGraph events={data?.events} />}
+        </Card>
+        <Card className="flex flex-col min-h-32 min-w-32">
+          {isLoading ? <Loader2 className="m-auto animate-spin" /> :
+            <CountComponent data={data?.data} />}
+        </Card>
       </div>
     </main>
   )

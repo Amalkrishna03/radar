@@ -26,7 +26,7 @@ liveState: LiveState = {
 def main(capture: cv2.VideoCapture):
     print("Starting main")
     root = GUI()
-    mainPanel, videoLabel, controlPanel, noisePanel, messagePanel, video1, video2 = (
+    mainPanel, videoLabel, controlPanel, noisePanel, messagePanel = (
         SetupLayout(root)
     )
     threeGraphs = SetupGraphEqualizer(noisePanel)

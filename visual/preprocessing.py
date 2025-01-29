@@ -26,9 +26,9 @@ def convertFrame(frame):
 
 def PreprocessFrame(frame: cv2.typing.MatLike):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray_blurred = cv2.GaussianBlur(gray, (21, 21), 0)
+    # gray_blurred = cv2.GaussianBlur(gray, (21, 21), 0)
 
-    return gray_blurred
+    return gray
 
 
 def FindVisualDifference(
@@ -60,21 +60,29 @@ def ExtractPriorityOld(frame: cv2.typing.MatLike, coordinates: tuple):  # type: 
 
 def ExtractPriority(frame: cv2.typing.MatLike, points: np.ndarray):
     low = frame.copy()
-
+    
     mask = np.zeros(frame.shape[:2], dtype=np.uint8)
     cv2.fillPoly(mask, [points], 255)
     mask_inv = cv2.bitwise_not(mask)
-
-    high = cv2.bitwise_and(frame, frame, mask=mask)
-    black_background = np.zeros_like(frame)
-
+    
     low = cv2.bitwise_and(low, low, mask=mask_inv)
     
-    # cv2.imshow('Modified Frame', low)
-    # cv2.imshow('Extracted Region', high)
+    x, y, w, h = cv2.boundingRect(points)
+    
+    padding = 10
+    x = max(0, x - padding)
+    y = max(0, y - padding)
+    w = min(frame.shape[1] - x, w + 2 * padding)
+    h = min(frame.shape[0] - y, h + 2 * padding)
+    
+    high = cv2.bitwise_and(frame, frame, mask=mask)
+    cropped_high = high[y:y+h, x:x+w]
+    
+    # cv2.imshow('Modified Frame (Full)', low)
+    # cv2.imshow('Extracted Region (Cropped)', cropped_high)
     # cv2.waitKey(0)
-
-    return low, high
+    
+    return low, cropped_high
 
 
 def DrawRectangles(
@@ -112,13 +120,11 @@ def DrawPolygon(frame: ctk.CTkFrame, points: np.ndarray, color=(0, 255, 0), thic
     Returns:
         numpy.ndarray: Frame with polygon drawn
     """
-
-    # # Create a copy of the frame and draw the polygon
-    # frame_copy = frame.copy()
+    
     return cv2.polylines(
         frame,
         [points],
-        isClosed=True,  # Close the polygon
+        isClosed=True,  
         color=color,
         thickness=thickness,
     )
@@ -131,9 +137,11 @@ def DrawWrapped(data):
         fh = DrawPolygon(frame, priority["high"], color=(0, 0, 255))
         fm = DrawPolygon(fh, priority["medium"], color=(0, 255, 0))
         
-        oh = DrawRectangles(fm, oldpriority["high"], color=(0, 0, 255))
-        om = DrawRectangles(oh, oldpriority["medium"], color=(0, 255, 0))
+        # oh = DrawRectangles(fm, oldpriority["high"], color=(0, 0, 255))
+        # om = DrawRectangles(oh, oldpriority["medium"], color=(0, 255, 0))
+        # return om
+        
+        return fm
 
-        return om
 
     return code
