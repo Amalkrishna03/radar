@@ -1,3 +1,4 @@
+import cv2
 from model.text import TextModel
 from model.vector import GetNow, ParseIds, SaveSituation, SearchSituation
 from model.vision import VisionModel
@@ -6,7 +7,7 @@ from utils.storage import CreatePublicURLs, GetURL, SaveToBucket
 from visual.image import GetBase64
 
 
-def RunSaveSituation(frame, label):
+def RunSaveSituation(frame: cv2.typing.MatLike, label):
     time = GetNow()
     base64, bytes, _ = GetBase64(frame)
 

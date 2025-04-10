@@ -86,6 +86,7 @@ class LiveState(TypedDict):
     isCapturing: bool
     isDetecting: bool
     isComparing: bool
+    isAnomaly: bool
     isSaving: bool
 
 if __name__ == "__main__":

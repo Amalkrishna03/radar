@@ -1,8 +1,9 @@
 import { CarIcon, PersonStandingIcon, RefreshCcw } from "lucide-react"
 import { useState } from "react"
+import { Button } from "../components/ui/button"
 import { AsyncSelect } from "../components/ui/search"
 import { backend } from "../hooks/fetcher"
-import { Button } from "../components/ui/button"
+import triedAsync from "../lib/utils"
 
 type Event = {
     id: string
@@ -16,8 +17,18 @@ const SearchEvents = ({mutate}:{mutate: () => void}) => {
     const searchAllEvents = async (query?: string) => {
         if (!query || query.length < 5) return []
 
-        const res = await fetch(backend + `/api/search?q=${encodeURIComponent(query)}`)
-        const data = (await res.json()) as Event[]
+        const {isSuccess, data} = await triedAsync(
+            (async () => {
+                const res = await fetch(backend + `/api/search?q=${encodeURIComponent(query)}`)
+                const data = (await res.json()) as Event[]
+
+                return data
+            })()
+        )
+
+        if (!isSuccess) {
+            return []
+        }
 
         return data
     }

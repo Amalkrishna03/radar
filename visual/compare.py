@@ -25,6 +25,7 @@ def CompareAction(
     thread.start()
 
 
+state = State.get_instance()
 def CompareNoise(
     capture: cv2.VideoCapture,
     liveState: LiveState,
@@ -32,7 +33,6 @@ def CompareNoise(
     # videoLabel: ctk.CTkLabel,
 ):
     oldFrame = None
-    state = State.get_instance()
 
     def createStopper(action):
         def actionWithStopper(value):
@@ -77,3 +77,7 @@ def CompareNoise(
 
         time.sleep(state.data["interval"])
         oldFrame = newFrame
+        
+    liveState["isComparing"] = False
+    liveState["isDetecting"] = True
+    liveState["isSaving"] = True
